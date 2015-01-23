@@ -6,93 +6,74 @@ section .bss
    
 
 section .text
-global start 
-global run
-start:
+    global start2               ; musi  byc zadeklarowny dla linkera (gcc)
+    global run2
+    extern malloc
+
+
+start2:
     push rbp
     mov qword rbp, rsp
 
-    mov dword [rbp-4], edi
-    mov dword [rbp-8], esi
-    mov qword [rbp-16], rdx
+    mov dword [rbp-4], edi      ; przenies z edi do rbp - 4
+    mov dword [rbp-8], esi      ; przenies z esi do rbp - 4
+    mov qword [rbp-16], rdx     ; przenies z rdx do rbp - 4
 
-    mov esi, dword [rbp-4]
-    mov [_s], esi
+    mov eax, dword [rbp-4]
+    mov [_s], eax
 
-    mov esi, dword [rbp-8]
-    mov [_w], esi
+    mov eax, dword [rbp-8]
+    mov [_w], eax
 
     mov rdx, qword [rbp-16]
     mov [_T], rdx
     
     pop rbp
-    ret 
+    ret
     
-    
-run:
+run2:
     push rbp
-    mov qword rbp, rsp
+    mov rbp, rsp
+    sub rsp, 48
+
+    mov dword [rbp-4], edi      ; przenies z edi parametr do rbp - 4
+
+    mov qword rax, [_T]         ; na rax daj adres _T
+    mov qword [rbp-48], rax     ; przypisz na rbp-48 to co w rax, czyli _T 
    
-    sub rsp, 64
- 
-    mov dword [rbp-4], edi
-    mov rax, qword [_T]
-    mov qword [rbp-48], rax
-    
 
-    movsxd rax, [_w]            ; wrzuc wartosc zmiennej _w i wrzuca do raxa + zmiena z 4 bitow na 8
-    shl qword rax, 3            ; przesuniecie bitowe w lewo o 3
-    mov rdi, rax  
-    extern malloc
-    call malloc                ; wywolujemy funkcje malloc
-    mov qword [rbp-24], rax     ; do raxa wrzucamy zmienna o przesunieciu 24 wzgledem wskaznika bazowego
-                                ; funkcja zawsze sie returnuje do raxa i to co w raxie wrzucam do 
-    
-    ;================ LOOP ===================
-BeforeLoop1:
-    mov eax, dword [rbp-8]
-    cmp eax, [_w]  
-    jge AfterLoop1
-
-; in loop
-    movsxd rax, [_s]  
-    shl qword rax, 0
-    mov rdi, rax
-    extern malloc
-    call malloc 
-    movsxd rdi, [rbp-8]
-    mov rcx, [rbp-24] 
-    mov [rcx + 8 * rdi], rax
-
-; adding to condition 
-    mov eax, dword [rbp-8]
-    add eax, 1
-    mov dword [rbp-8], eax
-    jmp BeforeLoop1
+    mov rax, [_w]               ; przypisz do rax to co w _w
+    shl rax, 3                  ; przesun bitowo w lewo o 3, pomnoz razy 8
+    call malloc                 ; wywolaj malloca
+    mov [rbp-24], rax           ; zapisze wynik malloca w rbp-24
+    mov qword [rbp-24], rax     ; nc cT przypisz wynik malloca ktory jest w rax
 
 
-
-AfterLoop1:
-    ;mov [rbp-8], 0
-    
-
-BeforeLoop2:
+    mov dword [rbp-8], 0
+FOR_LOOP:
     mov eax, dword [rbp-8]
     cmp eax, [_w]
-    jge AfterLoop2
+    jge AFTER_ALLOCATION
 
+    mov rax, [_s]
+    shl rax, 0
+    mov rdi, rax 
+    call malloc
+    movsxd rdi, dword [rbp-8]
+    mov rcx, qword [rbp-24]
+    mov [rcx + rdi * 8], rax    ; zapisanie do pamieci o takim adresie to co jest w rejestrze rax
+
+    mov eax, [rbp-8]
+    add eax, 1
+    mov dword [rbp-8], eax
+    jmp FOR_LOOP
+
+
+AFTER_ALLOCATION:               ; kod ktory jest po petli z alokacja
+    mov rax, qword [rbp-24]     ; przenies do rejestru rax zmienna cT
+    mov qword [rbp-32], rax     ; przypisz na zmienna fT rejestr rax
     
-
-AfterLoop2:
-
-
-
-
-
-
-; =============== epilog ========================
-    add rsp, 64
-
+    add rsp, 48
     pop rbp
     ret
     
