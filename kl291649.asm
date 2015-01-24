@@ -50,10 +50,10 @@ run2:
 
 
     mov dword [rbp-8], 0
-FOR_LOOP:
+MALLOC_LOOP:
     mov eax, dword [rbp-8]
     cmp eax, [_w]
-    jge AFTER_ALLOCATION
+    jge AFTER_MALLOC_LOOP
 
     movsxd rax, [_s]
     shl qword rax, 0
@@ -67,13 +67,47 @@ FOR_LOOP:
     mov eax, [rbp-8]
     add eax, 1
     mov dword [rbp-8], eax
-    jmp FOR_LOOP
+    jmp MALLOC_LOOP
 
 
-AFTER_ALLOCATION:               ; kod ktory jest po petli z alokacja
+AFTER_MALLOC_LOOP:               ; kod ktory jest po petli z alokacja
     mov rax, qword [rbp-24]     ; przenies do rejestru rax zmienna cT
     mov qword [rbp-32], rax     ; przypisz na zmienna fT rejestr rax
-    
+
+    mov dword [rbp-8], 0
+
+FIRST_LOOP:
+    mov eax, dword [rbp-8]
+    cmp eax, dword [rbp-4]
+    jge AFTER_FIRST_LOOP        ; jezeli i >= ile_krokow to wyskakuj z petli
+
+SECOND_LOOP:
+    mov eax, dword [rbp-16]     ; wez wartosc spod adresu rbp-16
+    cmp eax, [_w]
+    jge AFTER_SECOND_LOOP
+
+    jmp SECOND_LOOP_FINISH
+
+
+SECOND_LOOP_FINISH:
+    mov eax, dword [rbp-16]
+    add eax, 1
+    mov dword [rbp-16], eax
+    jmp SECOND_LOOP
+
+
+AFTER_SECOND_LOOP:
+    jmp FIRST_LOOP_FINISH
+
+
+FIRST_LOOP_FINISH:
+    mov eax, dword [rbp-8]
+    add eax, 1
+    mov dword [rbp-8], eax
+    jmp FIRST_LOOP    
+
+AFTER_FIRST_LOOP:
+
     add rsp, 48
     pop rbp
     ret
