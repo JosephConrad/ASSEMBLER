@@ -8,7 +8,6 @@ section .bss
 section .text
     global start2               ; musi  byc zadeklarowny dla linkera (gcc)
     global run2
-    extern malloc
 
 
 start2:
@@ -44,6 +43,7 @@ run2:
 
     mov rax, [_w]               ; przypisz do rax to co w _w
     shl rax, 3                  ; przesun bitowo w lewo o 3, pomnoz razy 8
+    extern malloc
     call malloc                 ; wywolaj malloca
     mov [rbp-24], rax           ; zapisze wynik malloca w rbp-24
     mov qword [rbp-24], rax     ; nc cT przypisz wynik malloca ktory jest w rax
@@ -55,9 +55,10 @@ FOR_LOOP:
     cmp eax, [_w]
     jge AFTER_ALLOCATION
 
-    mov rax, [_s]
-    shl rax, 0
-    mov rdi, rax 
+    movsxd rax, [_s]
+    shl qword rax, 0
+    mov rdi, rax
+    extern malloc
     call malloc
     movsxd rdi, dword [rbp-8]
     mov rcx, qword [rbp-24]
