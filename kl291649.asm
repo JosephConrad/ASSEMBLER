@@ -33,7 +33,7 @@ start2:
 run2:
     push rbp
     mov rbp, rsp
-    sub rsp, 48
+    sub rsp, 53
 
     mov dword [rbp-4], edi      ; przenies z edi parametr do rbp - 4
 
@@ -81,19 +81,90 @@ FIRST_LOOP:
     cmp eax, dword [rbp-4]
     jge AFTER_FIRST_LOOP        ; jezeli i >= ile_krokow to wyskakuj z petli
 
+    mov dword [rbp-16], 0
 SECOND_LOOP:
     mov eax, dword [rbp-16]     ; wez wartosc spod adresu rbp-16
     cmp eax, [_w]
     jge AFTER_SECOND_LOOP
 
+    mov dword [rbp-12], 0
 THIRD_LOOP:
     mov eax, dword [rbp-12]
     cmp eax, [_s]
     jge AFTER_THIRD_LOOP
 
+; ===============================================================================
+;                    w srodku petli - sprawdzenie ifow
+; ===============================================================================
+
+    mov dword [rbp-52], 0         ; przypisanie na l 0
+
+    cmp dword [rbp-12], 0
+    jle AFTER_FIRST_IF
+
+    mov eax, dword [rbp-12]
+    sub eax, 1
+    movsxd rcx, eax 
+    movsxd rdx, dword [rbp-16]
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    mov eax, [rdx+rcx]              ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp eax, 42                     ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne AFTER_FIRST_IF              ; jesli nie jest rowna
+
+    mov eax, dword [rbp-52]
+    add eax, 1
+    mov dword [rbp-52], eax 
 
 
 
+AFTER_FIRST_IF:
+    jmp STAR_IF
+
+; ===============================================================================
+;                    w srodku petli - aktualizacja pol gry w zycie
+; ===============================================================================
+    
+STAR_IF:
+    movsxd rax, dword [rbp-12]
+    movsxd rcx, dword [rbp-16]
+    mov rdx, qword [rbp-48]
+    mov rcx, [rdx+rcx*8]
+    mov esi, [rcx+rax]
+    cmp esi, 42
+    jne AFTER_STAR_IF
+
+; inside if
+    mov al, 1
+    cmp dword [rbp-52], 4
+    mov byte [rbp-53], al
+    jge SET_VALUE
+
+    cmp dword [rbp-52], 2
+    setl al
+    mov byte [rbp-53], al
+
+SET_VALUE:
+    mov al, [rbp-53]
+
+    mov ecx, 95
+    mov edx, 42
+    
+    test al, 1
+    cmove ecx, edx
+
+    movsxd rsi, dword [rbp-12]
+    movsxd rdi, dword [rbp-16]
+    mov r8, qword [rbp-24]
+    mov rdi, [r8+rdi*8]
+    mov [rdi+rsi], al
+
+
+
+
+
+AFTER_STAR_IF:
+    jmp THIRD_LOOP_FINISH
 
 THIRD_LOOP_FINISH:
     mov eax, dword [rbp-12]
@@ -121,7 +192,7 @@ FIRST_LOOP_FINISH:
 
 AFTER_FIRST_LOOP:
 
-    add rsp, 48
+    add rsp, 53
     pop rbp
     ret
     
