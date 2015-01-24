@@ -86,8 +86,23 @@ SECOND_LOOP:
     cmp eax, [_w]
     jge AFTER_SECOND_LOOP
 
-    jmp SECOND_LOOP_FINISH
+THIRD_LOOP:
+    mov eax, dword [rbp-12]
+    cmp eax, [_s]
+    jge AFTER_THIRD_LOOP
 
+
+
+
+
+THIRD_LOOP_FINISH:
+    mov eax, dword [rbp-12]
+    add eax, 1
+    mov dword [rbp-12], eax
+    jmp THIRD_LOOP
+
+AFTER_THIRD_LOOP:
+    jmp SECOND_LOOP_FINISH
 
 SECOND_LOOP_FINISH:
     mov eax, dword [rbp-16]
@@ -95,10 +110,8 @@ SECOND_LOOP_FINISH:
     mov dword [rbp-16], eax
     jmp SECOND_LOOP
 
-
 AFTER_SECOND_LOOP:
     jmp FIRST_LOOP_FINISH
-
 
 FIRST_LOOP_FINISH:
     mov eax, dword [rbp-8]
