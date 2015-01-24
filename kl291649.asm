@@ -12,7 +12,7 @@ section .text
 
 start2:
     push rbp
-    mov qword rbp, rsp
+    mov rbp, rsp
 
     mov dword [rbp-4], edi      ; przenies z edi do rbp - 4
     mov dword [rbp-8], esi      ; przenies z esi do rbp - 4
@@ -33,11 +33,11 @@ start2:
 run2:
     push rbp
     mov rbp, rsp
-    sub rsp, 53
+    sub rsp, 64
 
     mov dword [rbp-4], edi      ; przenies z edi parametr do rbp - 4
 
-    mov qword rax, [_T]         ; na rax daj adres _T
+    mov rax, [_T]               ; na rax daj wartosc pod adresem _T
     mov qword [rbp-48], rax     ; przypisz na rbp-48 to co w rax, czyli _T 
    
 
@@ -75,6 +75,12 @@ AFTER_MALLOC_LOOP:               ; kod ktory jest po petli z alokacja
     mov qword [rbp-32], rax     ; przypisz na zmienna fT rejestr rax
 
     mov dword [rbp-8], 0
+
+    ; mov rsi, 0
+    ; mov rdi, 0
+    ; mov r8, qword [rbp-48]
+    ; mov rdi, [r8+rdi*8]
+    ; mov [rdi+rsi], byte 88
 
 FIRST_LOOP:
     mov eax, dword [rbp-8]
@@ -125,39 +131,27 @@ AFTER_FIRST_IF:
 ;                    w srodku petli - aktualizacja pol gry w zycie
 ; ===============================================================================
     
+
+
+
+
+
 STAR_IF:
     movsxd rax, dword [rbp-12]
     movsxd rcx, dword [rbp-16]
     mov rdx, qword [rbp-48]
     mov rcx, [rdx+rcx*8]
     mov esi, [rcx+rax]
-    cmp esi, 42
+    cmp esi, 0
     jne AFTER_STAR_IF
 
-; inside if
-    mov al, 1
-    cmp dword [rbp-52], 4
-    mov byte [rbp-53], al
-    jge SET_VALUE
 
-    cmp dword [rbp-52], 2
-    setl al
-    mov byte [rbp-53], al
-
-SET_VALUE:
-    mov al, [rbp-53]
-
-    mov ecx, 95
-    mov edx, 42
-    
-    test al, 1
-    cmove ecx, edx
 
     movsxd rsi, dword [rbp-12]
     movsxd rdi, dword [rbp-16]
     mov r8, qword [rbp-24]
     mov rdi, [r8+rdi*8]
-    mov [rdi+rsi], al
+    mov [rdi+rsi], byte 42  
 
 
 
@@ -185,6 +179,19 @@ AFTER_SECOND_LOOP:
     jmp FIRST_LOOP_FINISH
 
 FIRST_LOOP_FINISH:
+
+
+; ===============================================================================
+;                    podmieniam tablice na koncu ostatniej petli
+; ===============================================================================
+
+    mov rax, qword [rbp-48]
+    mov qword [rbp-40], rax
+    mov rax, qword [rbp-24]
+    mov qword [rbp-48], rax
+    mov rax, qword [rbp-40]
+    mov qword [rbp-24], rax
+
     mov eax, dword [rbp-8]
     add eax, 1
     mov dword [rbp-8], eax
@@ -192,7 +199,7 @@ FIRST_LOOP_FINISH:
 
 AFTER_FIRST_LOOP:
 
-    add rsp, 53
+    add rsp, 64
     pop rbp
     ret
     
