@@ -91,16 +91,218 @@ THIRD_LOOP:
     cmp eax, [_s]
     jge AFTER_THIRD_LOOP
 
+
 ; ===============================================================================
 ;                    w srodku petli - sprawdzenie ifow
 ; ===============================================================================
 
-AFTER_FIRST_IF:
+    mov dword [rbp-52], 0         ; przypisanie na l = 0
+
+FIRST_IF:
+    cmp dword [rbp-12], 0           ;porownanie 
+    jle SECOND_IF
+
+    mov eax, dword [rbp-12]
+    sub eax, 1
+    movsxd rcx, eax 
+    movsxd rdx, dword [rbp-16]
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne SECOND_IF                       ; jesli nie jest rowna
+
+
+    mov edx, dword [rbp-52]
+    add edx, 1 
+    mov dword [rbp-52], edx
+
+
+
+SECOND_IF:
+
+    mov eax, dword [_s]
+    sub eax, 1
+    cmp dword [rbp-12], eax
+    jge THIRD_IF
+
+    mov eax, dword [rbp-12]
+    add eax, 1
+    movsxd rcx, eax 
+    movsxd rdx, dword [rbp-16]
+
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    movzx rax, byte [rdx+rcx]              ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                     ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne THIRD_IF   
+
+    mov edx, dword [rbp-52]
+    add edx, 1 
+    mov dword [rbp-52], edx
+
+THIRD_IF:
+    cmp dword [rbp-16], 0           ;porownanie 
+    jle FOUTH_IF
+
+    movsxd rcx, dword [rbp-12]  
+    mov ebx, dword [rbp-16]
+    sub ebx, 1
+    movsxd rdx, ebx 
+
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne FOUTH_IF   
+
+    mov edx, dword [rbp-52]
+    add edx, 1 
+    mov dword [rbp-52], edx
+
+FOUTH_IF:
+    mov eax, dword [_w]
+    sub eax, 1
+    cmp dword [rbp-16], eax
+    jge FIFTH_IF
+
+    movsxd rcx, dword [rbp-12]  
+    mov ebx, dword [rbp-16]
+    add ebx, 1
+    movsxd rdx, ebx 
+
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne FIFTH_IF
+
+    mov edx, dword [rbp-52]
+    add edx, 1 
+    mov dword [rbp-52], edx
+
+
+FIFTH_IF:   
+    cmp dword [rbp-12], 0           ;porownanie xe x > 0 
+    jle SIXTH_IF
+
+    cmp dword [rbp-16], 0           ;porownanie ze y > 0
+    jle SIXTH_IF
+
+    mov eax, dword [rbp-12] 
+    sub eax, 1
+    movsxd rcx, eax                 ; wyciagniecie wartosci y - 1
+
+    mov ebx, dword [rbp-16]
+    sub ebx, 1
+    movsxd rdx, ebx                 ; wyciagniecie wartosci x - 1
+
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne SIXTH_IF
+
+    mov edx, dword [rbp-52]
+    add edx, 1 
+    mov dword [rbp-52], edx
+
+SIXTH_IF:
+    cmp dword [rbp-12], 0           ;porownanie xe x > 0 
+    jle SEVENTH_IF
+
+    mov eax, dword [_w]
+    sub eax, 1
+    cmp dword [rbp-16], eax
+    jge FIFTH_IF                    ;porownanie xe y < _w - 1 
+
+    mov eax, dword [rbp-12] 
+    sub eax, 1
+    movsxd rcx, eax                 ; tutaj zmieniam x
+
+    mov ebx, dword [rbp-16]
+    add ebx, 1
+    movsxd rdx, ebx                 ; tutaj zmieniam y
+
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne SEVENTH_IF
+
+    mov edx, dword [rbp-52]
+    add edx, 1 
+    mov dword [rbp-52], edx
+
+SEVENTH_IF: 
+    mov eax, dword [_s]
+    sub eax, 1
+    cmp dword [rbp-12], eax
+    jge EIGHT_IF
+
+    cmp dword [rbp-16], 0           ;porownanie 
+    jle EIGHT_IF
+
+    mov eax, dword [rbp-12] 
+    add eax, 1
+    movsxd rcx, eax                 ; tutaj zmieniam x
+
+    mov ebx, dword [rbp-16]
+    sub ebx, 1
+    movsxd rdx, ebx                 ; tutaj zmieniam y
+
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne EIGHT_IF
+
+    mov edx, dword [rbp-52]
+    add edx, 1 
+    mov dword [rbp-52], edx
+
+EIGHT_IF: 
+    mov eax, dword [_s]
+    sub eax, 1
+    cmp dword [rbp-12], eax
+    jge END_IF
+
+    mov eax, dword [_w]
+    sub eax, 1
+    cmp dword [rbp-16], eax
+    jge END_IF                    ;porownanie xe y < _w - 1 
+
+    mov eax, dword [rbp-12] 
+    add eax, 1
+    movsxd rcx, eax                 ; tutaj zmieniam x
+
+    mov ebx, dword [rbp-16]
+    add ebx, 1
+    movsxd rdx, ebx                 ; tutaj zmieniam y
+
+    mov rsi, qword [rbp-48]
+    mov rdx, [rsi+rdx*8]
+    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne END_IF
+
+    mov edx, dword [rbp-52]
+    add edx, 1 
+    mov dword [rbp-52], edx
+    
+
+END_IF:
+    
+    xor rax, rax
+    mov eax, dword [rbp-52]
+    leave
+    ret
     jmp STAR_IF
 
 ; ===============================================================================
 ;                    w srodku petli - aktualizacja pol gry w zycie
 ; ===============================================================================
+
    
 
 STAR_IF: 
@@ -201,6 +403,7 @@ FIRST_LOOP_FINISH:
 ; ===============================================================================
 
 AFTER_FIRST_LOOP: 
+
     leave
     ret
     
