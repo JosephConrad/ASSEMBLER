@@ -214,7 +214,7 @@ SIXTH_IF:
     mov eax, dword [_w]
     sub eax, 1
     cmp dword [rbp-16], eax
-    jge FIFTH_IF                    ;porownanie xe y < _w - 1 
+    jge SEVENTH_IF                    ;porownanie xe y < _w - 1 
 
     mov eax, dword [rbp-12] 
     sub eax, 1
@@ -292,18 +292,14 @@ EIGHT_IF:
     
 
 END_IF:
-    
-    xor rax, rax
-    mov eax, dword [rbp-52]
-    leave
-    ret
+
     jmp STAR_IF
 
 ; ===============================================================================
 ;                    w srodku petli - aktualizacja pol gry w zycie
 ; ===============================================================================
 
-   
+
 
 STAR_IF: 
 
@@ -321,7 +317,19 @@ STAR_IF:
     movsxd rdi, dword [rbp-16] 
     mov rax, qword [rbp-24]
     mov rdi, [rax+rdi*8] 
-    mov [rdi+rsi], byte 42
+
+    cmp dword [rbp-52], 4
+    jge STAR_THEN
+
+    cmp dword [rbp-52], 2
+    jl STAR_THEN
+
+    mov [rdi+rsi], byte 42              ; else
+    jmp UNDERSCORE_IF
+
+STAR_THEN:
+    mov [rdi+rsi], byte 95
+
 
 UNDERSCORE_IF:
     movsxd rax, dword [rbp-12]
@@ -332,17 +340,32 @@ UNDERSCORE_IF:
     mov rdx, 95
 
     cmp rsi, rdx
-    jne AFTER_STAR_IF
- 
+    jne AFTER_UNDERSCORE_IF
+
     movsxd rsi, dword [rbp-12]
     movsxd rdi, dword [rbp-16] 
     mov rax, qword [rbp-24]
-    mov rdi, [rax+rdi*8] 
-    mov [rdi+rsi], byte 95
+    mov rdi, [rax+rdi*8]
 
+    cmp dword [rbp-52], 3     ; test czy l == 3
+    jne UNDERSCORE_ELSE       ; jesli nie to idz do elsa
 
-AFTER_STAR_IF:
+    mov [rdi+rsi], byte 42    ; a jesli tak to przypisz *
+    jmp AFTER_UNDERSCORE_IF
+
+UNDERSCORE_ELSE:
+    mov [rdi+rsi], byte 95    ; i przypisz _
+
+AFTER_UNDERSCORE_IF:
     jmp THIRD_LOOP_FINISH
+
+
+
+; ===============================================================================
+;                    protokoly koncowe petli
+; ===============================================================================
+
+
 
 THIRD_LOOP_FINISH:
     mov eax, dword [rbp-12]
@@ -402,10 +425,6 @@ FIRST_LOOP_FINISH:
 ;                    protokol koncowy
 ; ===============================================================================
 
-AFTER_FIRST_LOOP: 
-
-    leave
+AFTER_FIRST_LOOP:
+    leave 
     ret
-    
-    
-    
