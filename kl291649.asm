@@ -14,9 +14,9 @@ start2:
     push rbp
     mov rbp, rsp
 
-    mov dword [rbp-4], edi      ; przenies z edi do rbp - 4
-    mov dword [rbp-8], esi      ; przenies z esi do rbp - 4
-    mov qword [rbp-16], rdx     ; przenies z rdx do rbp - 4
+    mov dword [rbp-4], edi        ; przenies z edi do rbp - 4
+    mov dword [rbp-8], esi        ; przenies z esi do rbp - 4
+    mov qword [rbp-16], rdx       ; przenies z rdx do rbp - 4
 
     mov eax, dword [rbp-4]
     mov [_s], eax
@@ -34,17 +34,17 @@ run2:
     enter 0,0
     sub rsp, 100
 
-    mov dword [rbp-4], edi      ; przenies z edi parametr do rbp - 4
+    mov dword [rbp-4], edi        ; przenies z edi parametr do rbp - 4
 
-    mov rax, [_T]               ; na rax daj wartosc pod adresem _T
-    mov qword [rbp-48], rax     ; przypisz na rbp-48 to co w rax, czyli _T 
+    mov rax, [_T]                 ; na rax daj wartosc pod adresem _T
+    mov qword [rbp-48], rax       ; przypisz na rbp-48 to co w rax, czyli _T 
 
-    mov rax, [_w]               ; przypisz do rax to co w _w
-    shl rax, 3                  ; przesun bitowo w lewo o 3, pomnoz razy 8
+    mov rax, [_w]                 ; przypisz do rax to co w _w
+    shl rax, 3                    ; przesun bitowo w lewo o 3, pomnoz razy 8
     extern malloc
-    call malloc                 ; wywolaj malloca
-    mov [rbp-24], rax           ; zapisze wynik malloca w rbp-24
-    mov qword [rbp-24], rax     ; nc cT przypisz wynik malloca ktory jest w rax
+    call malloc                   ; wywolaj malloca
+    mov [rbp-24], rax             ; zapisze wynik malloca w rbp-24
+    mov qword [rbp-24], rax       ; nc cT przypisz wynik malloca ktory jest w rax
 
 
     mov dword [rbp-8], 0
@@ -60,28 +60,28 @@ MALLOC_LOOP:
     call malloc
     movsxd rdi, dword [rbp-8]
     mov rcx, qword [rbp-24]
-    mov [rcx + rdi * 8], rax    ; zapisanie do pamieci o takim adresie to co jest w rejestrze rax
+    mov [rcx + rdi * 8], rax      ; zapisanie do pamieci o takim adresie to co jest w rejestrze rax
 
     mov eax, [rbp-8]
     add eax, 1
     mov dword [rbp-8], eax
     jmp MALLOC_LOOP 
 
-AFTER_MALLOC_LOOP:               ; kod ktory jest po petli z alokacja 
+AFTER_MALLOC_LOOP:                ; kod ktory jest po petli z alokacja 
 
-    mov rax, qword [rbp-24]      ; przenies do rejestru rax zmienna cT
-    mov qword [rbp-32], rax      ; przypisz na zmienna fT rejestr rax
+    mov rax, qword [rbp-24]       ; przenies do rejestru rax zmienna cT
+    mov qword [rbp-32], rax       ; przypisz na zmienna fT rejestr rax
 
     mov dword [rbp-8], 0
 
 FIRST_LOOP:
     mov eax, dword [rbp-8]
     cmp eax, dword [rbp-4]
-    jge AFTER_FIRST_LOOP        ; jezeli i >= ile_krokow to wyskakuj z petli
+    jge AFTER_FIRST_LOOP          ; jezeli i >= ile_krokow to wyskakuj z petli
 
     mov dword [rbp-16], 0
 SECOND_LOOP:
-    mov eax, dword [rbp-16]     ; wez wartosc spod adresu rbp-16
+    mov eax, dword [rbp-16]       ; wez wartosc spod adresu rbp-16
     cmp eax, [_w]
     jge AFTER_SECOND_LOOP
 
@@ -99,7 +99,7 @@ THIRD_LOOP:
     mov dword [rbp-52], 0         ; przypisanie na l = 0
 
 FIRST_IF:
-    cmp dword [rbp-12], 0           ;porownanie 
+    cmp dword [rbp-12], 0         ; porownanie 
     jle SECOND_IF
 
     mov eax, dword [rbp-12]
@@ -108,9 +108,9 @@ FIRST_IF:
     movsxd rdx, dword [rbp-16]
     mov rsi, qword [rbp-48]
     mov rdx, [rsi+rdx*8]
-    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
-    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
-    jne SECOND_IF                       ; jesli nie jest rowna
+    movzx rax, byte [rdx+rcx]     ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                   ; porownaj to co jest w cT2[y][x-1] z tym *
+    jne SECOND_IF                 ; jesli nie jest rowna
 
 
     mov edx, dword [rbp-52]
@@ -133,8 +133,8 @@ SECOND_IF:
 
     mov rsi, qword [rbp-48]
     mov rdx, [rsi+rdx*8]
-    movzx rax, byte [rdx+rcx]              ; byc moze trezeba bedzie inna instrukcje zastosowac
-    cmp rax, 42                     ; porownaj to co jest w cT2[y][x-1] z tym *
+    movzx rax, byte [rdx+rcx]     ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                   ; porownaj to co jest w cT2[y][x-1] z tym *
     jne THIRD_IF   
 
     mov edx, dword [rbp-52]
@@ -142,7 +142,7 @@ SECOND_IF:
     mov dword [rbp-52], edx
 
 THIRD_IF:
-    cmp dword [rbp-16], 0           ;porownanie 
+    cmp dword [rbp-16], 0         ; porownanie 
     jle FOUTH_IF
 
     movsxd rcx, dword [rbp-12]  
@@ -152,8 +152,8 @@ THIRD_IF:
 
     mov rsi, qword [rbp-48]
     mov rdx, [rsi+rdx*8]
-    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
-    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    movzx rax, byte [rdx+rcx]     ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                   ; porownaj to co jest w cT2[y][x-1] z tym *
     jne FOUTH_IF   
 
     mov edx, dword [rbp-52]
@@ -173,8 +173,8 @@ FOUTH_IF:
 
     mov rsi, qword [rbp-48]
     mov rdx, [rsi+rdx*8]
-    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
-    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    movzx rax, byte [rdx+rcx]     ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                   ; porownaj to co jest w cT2[y][x-1] z tym *
     jne FIFTH_IF
 
     mov edx, dword [rbp-52]
@@ -183,24 +183,24 @@ FOUTH_IF:
 
 
 FIFTH_IF:   
-    cmp dword [rbp-12], 0           ;porownanie xe x > 0 
+    cmp dword [rbp-12], 0         ; porownanie xe x > 0 
     jle SIXTH_IF
 
-    cmp dword [rbp-16], 0           ;porownanie ze y > 0
+    cmp dword [rbp-16], 0         ; porownanie ze y > 0
     jle SIXTH_IF
 
     mov eax, dword [rbp-12] 
     sub eax, 1
-    movsxd rcx, eax                 ; wyciagniecie wartosci y - 1
+    movsxd rcx, eax               ; wyciagniecie wartosci y - 1
 
     mov ebx, dword [rbp-16]
     sub ebx, 1
-    movsxd rdx, ebx                 ; wyciagniecie wartosci x - 1
+    movsxd rdx, ebx               ; wyciagniecie wartosci x - 1
 
     mov rsi, qword [rbp-48]
     mov rdx, [rsi+rdx*8]
-    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
-    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    movzx rax, byte [rdx+rcx]     ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                   ; porownaj to co jest w cT2[y][x-1] z tym *
     jne SIXTH_IF
 
     mov edx, dword [rbp-52]
@@ -208,26 +208,26 @@ FIFTH_IF:
     mov dword [rbp-52], edx
 
 SIXTH_IF:
-    cmp dword [rbp-12], 0           ;porownanie xe x > 0 
+    cmp dword [rbp-12], 0         ; porownanie xe x > 0 
     jle SEVENTH_IF
 
     mov eax, dword [_w]
     sub eax, 1
     cmp dword [rbp-16], eax
-    jge SEVENTH_IF                    ;porownanie xe y < _w - 1 
+    jge SEVENTH_IF                ; porownanie xe y < _w - 1 
 
     mov eax, dword [rbp-12] 
     sub eax, 1
-    movsxd rcx, eax                 ; tutaj zmieniam x
+    movsxd rcx, eax               ; tutaj zmieniam x
 
     mov ebx, dword [rbp-16]
     add ebx, 1
-    movsxd rdx, ebx                 ; tutaj zmieniam y
+    movsxd rdx, ebx               ; tutaj zmieniam y
 
     mov rsi, qword [rbp-48]
     mov rdx, [rsi+rdx*8]
-    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
-    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    movzx rax, byte [rdx+rcx]     ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                   ; porownaj to co jest w cT2[y][x-1] z tym *
     jne SEVENTH_IF
 
     mov edx, dword [rbp-52]
@@ -240,21 +240,21 @@ SEVENTH_IF:
     cmp dword [rbp-12], eax
     jge EIGHT_IF
 
-    cmp dword [rbp-16], 0           ;porownanie 
+    cmp dword [rbp-16], 0         ; porownanie 
     jle EIGHT_IF
 
     mov eax, dword [rbp-12] 
     add eax, 1
-    movsxd rcx, eax                 ; tutaj zmieniam x
+    movsxd rcx, eax               ; tutaj zmieniam x
 
     mov ebx, dword [rbp-16]
     sub ebx, 1
-    movsxd rdx, ebx                 ; tutaj zmieniam y
+    movsxd rdx, ebx               ; tutaj zmieniam y
 
     mov rsi, qword [rbp-48]
     mov rdx, [rsi+rdx*8]
-    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
-    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    movzx rax, byte [rdx+rcx]     ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                   ; porownaj to co jest w cT2[y][x-1] z tym *
     jne EIGHT_IF
 
     mov edx, dword [rbp-52]
@@ -270,20 +270,20 @@ EIGHT_IF:
     mov eax, dword [_w]
     sub eax, 1
     cmp dword [rbp-16], eax
-    jge END_IF                    ;porownanie xe y < _w - 1 
+    jge END_IF                    ; porownanie xe y < _w - 1 
 
     mov eax, dword [rbp-12] 
     add eax, 1
-    movsxd rcx, eax                 ; tutaj zmieniam x
+    movsxd rcx, eax               ; tutaj zmieniam x
 
     mov ebx, dword [rbp-16]
     add ebx, 1
-    movsxd rdx, ebx                 ; tutaj zmieniam y
+    movsxd rdx, ebx               ; tutaj zmieniam y
 
     mov rsi, qword [rbp-48]
     mov rdx, [rsi+rdx*8]
-    movzx rax, byte [rdx+rcx]           ; byc moze trezeba bedzie inna instrukcje zastosowac
-    cmp rax, 42                         ; porownaj to co jest w cT2[y][x-1] z tym *
+    movzx rax, byte [rdx+rcx]     ; byc moze trezeba bedzie inna instrukcje zastosowac
+    cmp rax, 42                   ; porownaj to co jest w cT2[y][x-1] z tym *
     jne END_IF
 
     mov edx, dword [rbp-52]
@@ -324,7 +324,7 @@ STAR_IF:
     cmp dword [rbp-52], 2
     jl STAR_THEN
 
-    mov [rdi+rsi], byte 42              ; else
+    mov [rdi+rsi], byte 42        ; else
     jmp UNDERSCORE_IF
 
 STAR_THEN:
@@ -347,14 +347,14 @@ UNDERSCORE_IF:
     mov rax, qword [rbp-24]
     mov rdi, [rax+rdi*8]
 
-    cmp dword [rbp-52], 3     ; test czy l == 3
-    jne UNDERSCORE_ELSE       ; jesli nie to idz do elsa
+    cmp dword [rbp-52], 3         ; test czy l == 3
+    jne UNDERSCORE_ELSE           ; jesli nie to idz do elsa
 
-    mov [rdi+rsi], byte 42    ; a jesli tak to przypisz *
+    mov [rdi+rsi], byte 42        ; a jesli tak to przypisz *
     jmp AFTER_UNDERSCORE_IF
 
 UNDERSCORE_ELSE:
-    mov [rdi+rsi], byte 95    ; i przypisz _
+    mov [rdi+rsi], byte 95        ; i przypisz _
 
 AFTER_UNDERSCORE_IF:
     jmp THIRD_LOOP_FINISH
