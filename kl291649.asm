@@ -9,6 +9,7 @@ section .bss
     _w:     resb    4 
     _T:     resb    8 
    
+    ile_k   resd    1
     i:      resd    1
     x:      resd    1
     y:      resd    1
@@ -40,14 +41,15 @@ run:
     enter 0,0
     sub rsp, 100
 
-    mov dword [rbp-4], edi        ; przenies z edi parametr do rbp - 4
+    mov dword [ile_k], edi        ; przenies z edi parametr do rbp - 4
 
     mov rax, [_T]                 ; na rax daj wartosc pod adresem _T
     mov qword [cT2], rax       ; przypisz na rbp-48 to co w rax, czyli _T 
 
-    movsxd rax, dword [_w]                 ; przypisz do rax to co w _w
-    shl rax, 3                    ; przesun bitowo w lewo o 3, pomnoz razy 8
-    call malloc                   ; wywolaj malloca
+    movsxd rdi, dword [_w]                 ; przypisz do rax to co w _w
+    shl rdi, 3                    ; przesun bitowo w lewo o 3, pomnoz razy 8
+ 
+    call malloc                   ; wywolaj malloca 
     mov [cT], rax             ; zapisze wynik malloca w rbp-24
     mov qword [cT], rax       ; nc cT przypisz wynik malloca ktory jest w rax
 
@@ -58,9 +60,9 @@ MALLOC_LOOP:
     cmp eax, [_w]
     jge AFTER_MALLOC_LOOP
 
-    movsxd rax, [_s]
-    shl rax, 3  
-    call malloc
+    movsxd rdi, [_s]
+    shl rdi, 3  
+    call malloc 
     movsxd rdi, dword [i]
     mov rcx, [cT]
     mov[rcx + rdi * 8], rax      ; zapisanie do pamieci o takim adresie to co jest w rejestrze rax
