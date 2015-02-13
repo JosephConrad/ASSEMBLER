@@ -81,7 +81,7 @@ AFTER_MALLOC_LOOP:                ; kod ktory jest po petli z alokacja
 
 FIRST_LOOP:
     mov eax, dword [i]
-    cmp eax, dword [rbp-4]
+    cmp eax, dword [ile_k]
     jge AFTER_FIRST_LOOP          ; jezeli i >= ile_krokow to wyskakuj z petli
 
     mov dword [y], 0
